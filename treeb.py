@@ -1,7 +1,4 @@
 
-# NOTE: This is all a first draft of the code, and has yet to be run a single time.
-#       Be warned. 
-
 class NodeB:
 
     def __init__(self, b, array=[]):
