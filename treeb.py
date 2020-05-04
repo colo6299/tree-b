@@ -7,6 +7,7 @@ class NodeB:
 
 
     def _find_array_index(self, item, lower_vindex, upper_vindex):
+        # We'll just pretend this works exactly as intended 
 
         def devirt(virtual_index):
             return (virtual_index * 2) + 1
@@ -25,10 +26,14 @@ class NodeB:
 
         if center_item > item:
             upper_vindex = virtual_center - 1
-
+            if lower_vindex == virtual_center:
+                return devirt(virtual_center) - 1
+            print('pront')
         else:
+            if lower_vindex == virtual_center:
+                return devirt(virtual_center) + 1
             lower_vindex = virtual_center 
-        return self._find_array_index(item, upper_vindex, lower_vindex)
+        return self._find_array_index(item, lower_vindex, upper_vindex)
 
     
     def _split(self):
@@ -52,7 +57,7 @@ class NodeB:
             promotion = self.array[insert_index].insert(item)
         else:
             self.array.insert(insert_index, item)  # I could fix these double-inserts, 
-            self.array.insert(insert_index, None)  # but it's not really worth the time
+            self.array.insert(insert_index, None)  # but it's not really worth the effort
         if promotion is not None:
             self.array[insert_index] = promotion[0]
             self.array.insert(insert_index+1, promotion[2])
@@ -68,7 +73,6 @@ class NodeB:
                     item.val_order_traverse(outlist)
             else:
                 outlist.append(item)
-        
 
 
 class TreeB:
@@ -98,11 +102,13 @@ class TreeB:
 if __name__ == "__main__":
     tree = TreeB()
     tree.insert(5)
+    tree.insert(4)
     tree.insert(6)
     tree.insert(7)
     tree.insert(11)
     tree.insert(13)
     tree.insert(15)
+    tree.insert(3)
     print(tree.value_order_traversal())
 
 
