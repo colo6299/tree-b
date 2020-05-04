@@ -5,8 +5,12 @@ class NodeB:
         self.array = array
         self.b = b
 
-
     def _find_array_index(self, item, lower_vindex, upper_vindex):
+        '''
+        Returns the index of the child the item should belong to
+
+        will be redone in due time
+        '''
         # We'll just pretend this works exactly as intended 
 
         def devirt(virtual_index):
@@ -16,7 +20,7 @@ class NodeB:
         center_item = self.array[devirt(virtual_center)]
 
         if center_item == item:
-            raise ValueError
+            return center_item, True  # I know, I know...
 
         if upper_vindex == lower_vindex:
             if center_item > item:
@@ -28,22 +32,18 @@ class NodeB:
             upper_vindex = virtual_center - 1
             if lower_vindex == virtual_center:
                 return devirt(virtual_center) - 1
-            print('pront')
         else:
             if lower_vindex == virtual_center:
                 return devirt(virtual_center) + 1
             lower_vindex = virtual_center 
         return self._find_array_index(item, lower_vindex, upper_vindex)
-
     
     def _split(self):
-        print('s')
         promo_index = self.b  # round down when even 
         right_child = NodeB(self.b, array=self.array[promo_index+1:])  # sketch af
         promo_triple = self, self.array[promo_index], right_child 
         del self.array[promo_index:]  # never seen del before, neato
         return promo_triple
-
 
     def insert(self, item):
 
@@ -56,7 +56,7 @@ class NodeB:
         if self.array[insert_index] is not None:
             promotion = self.array[insert_index].insert(item)
         else:
-            self.array.insert(insert_index, item)  # I could fix these double-inserts, 
+            self.array.insert(insert_index, item)  # I could fix these double-inserts,
             self.array.insert(insert_index, None)  # but it's not really worth the effort
         if promotion is not None:
             self.array[insert_index] = promotion[0]
@@ -73,6 +73,37 @@ class NodeB:
                     item.val_order_traverse(outlist)
             else:
                 outlist.append(item)
+
+    def _structure_probe(self, outlist, depth):
+        tlist = []
+        vlen = (len(self.array)-1)//2
+        for i in range(vlen):
+            tlist.append(self.array[(2*i)+1])
+        tstring = 'Depth ' + str(depth) + ': ' + str(tlist)
+        outlist.append(tstring)
+        for i in range(vlen+1):
+            if self.array[2*i] is not None:
+                self.array[2*i]._structure_probe(outlist, depth+1)
+
+    def contains(self, item):
+        return self.search(item, True)
+
+    def search(self, item, yn=False):
+
+        def revirt(real_index):
+            return (real_index - 1) // 2
+
+        result = self._find_array_index(item, 0, revirt(len(self.array)))
+        if type(result) is not tuple:
+            if result is not None:
+                return self.array[result].search(item, yn)
+            else:
+                return False
+        else:
+            if yn is True:
+                return True
+            else:
+                return result[0]
 
 
 class TreeB:
@@ -97,10 +128,29 @@ class TreeB:
         node.val_order_traverse(retlist)
         return retlist
 
+    def probe(self):
+        if self.root is None:
+            return 'Empty tree!'
+        else:
+            plist = []
+            self.root._structure_probe(plist, 0)
+            for string in plist:
+                print(string)
 
+    def contains(self, item):
+        if self.root is not None:
+            return self.root.search(item, True)
+        else:
+            return False
+
+    def search(self, item):
+        if self.root is not None:
+            self.root.search(item)
+        else:
+            return False
 
 if __name__ == "__main__":
-    tree = TreeB()
+    tree = TreeB(5)
     tree.insert(5)
     tree.insert(4)
     tree.insert(6)
@@ -110,6 +160,8 @@ if __name__ == "__main__":
     tree.insert(15)
     tree.insert(3)
     print(tree.value_order_traversal())
+    tree.probe()
+    tree.search(5)
 
 
 
