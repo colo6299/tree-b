@@ -52,7 +52,6 @@ class NodeB:
 
         promotion = None
         insert_index = self._find_array_index(item, 0, revirt(len(self.array)))
-        print(self.array)
         if self.array[insert_index] is not None:
             promotion = self.array[insert_index].insert(item)
         else:
@@ -62,7 +61,6 @@ class NodeB:
             self.array[insert_index] = promotion[0]
             self.array.insert(insert_index+1, promotion[2])
             self.array.insert(insert_index+1, promotion[1])
-        print(self.array)
         if len(self.array) >= ((self.b * 2) + 1):
             return self._split()
 
