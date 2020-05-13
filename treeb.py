@@ -1,3 +1,4 @@
+from random import randint
 
 class NodeB:
 
@@ -20,21 +21,21 @@ class NodeB:
         center_item = self.array[devirt(virtual_center)]
 
         if center_item == item:
-            return center_item, True  # I know, I know...
+            return devirt(virtual_center), True  # I know, I know...
 
         if upper_vindex == lower_vindex:
             if center_item > item:
-                return devirt(virtual_center) - 1  # these may be a problem, we'll see.
+                return (devirt(virtual_center) - 1), False  # these may be a problem, we'll see.
             else:
-                return devirt(virtual_center) + 1  # ^
+                return (devirt(virtual_center) + 1), False  # ^
 
         if center_item > item:
             upper_vindex = virtual_center - 1
             if lower_vindex == virtual_center:
-                return devirt(virtual_center) - 1
+                return (devirt(virtual_center) - 1), False
         else:
             if lower_vindex == virtual_center:
-                return devirt(virtual_center) + 1
+                return (devirt(virtual_center) + 1), False
             lower_vindex = virtual_center 
         return self._find_array_index(item, lower_vindex, upper_vindex)
     
@@ -51,7 +52,7 @@ class NodeB:
             return (real_index - 1) // 2
 
         promotion = None
-        insert_index = self._find_array_index(item, 0, revirt(len(self.array)))
+        insert_index = self._find_array_index(item, 0, revirt(len(self.array)))[0]
         if self.array[insert_index] is not None:
             promotion = self.array[insert_index].insert(item)
         else:
@@ -92,16 +93,33 @@ class NodeB:
             return (real_index - 1) // 2
 
         result = self._find_array_index(item, 0, revirt(len(self.array)))
-        if type(result) is not tuple:
-            if result is not None:
-                return self.array[result].search(item, yn)
-            else:
-                return False
-        else:
+
+        if result is None:
+            return False
+        elif self.array[result[0]] is None:
             if yn is True:
                 return True
             else:
-                return result[0]
+                return self.array[result[0]]          
+        elif result[1] is False:
+            return self.array[result[0]].search(item, yn)
+        elif result[1] is True:
+            if yn is True:
+                return True
+            else:
+                return self.array[result[0]]          
+
+
+        # if type(result) is not tuple:
+        #     if result is not None:
+        #         return self.array[result].search(item, yn)
+        #     else:
+        #         return False
+        # else:
+        #     if yn is True:
+        #         return True
+        #     else:
+        #         return result[0]
 
 
 class TreeB:
@@ -149,17 +167,28 @@ class TreeB:
 
 if __name__ == "__main__":
     tree = TreeB(5)
-    tree.insert(5)
-    tree.insert(4)
-    tree.insert(6)
-    tree.insert(7)
-    tree.insert(11)
-    tree.insert(13)
-    tree.insert(15)
-    tree.insert(3)
+
+    def _insert_b(b, l=10):
+        tree = TreeB(b)
+        test_list = []
+        for _ in range(l):
+            n = randint(0, 1000)
+            if n not in test_list:
+                test_list.append(n)
+        # for item in test_list:
+        #     tree.insert(item)
+        return tree, test_list
+
+    items = _insert_b(6, 15)[1]
+    # for item in [5, 4, 6, 7, 11, 13, 15, 32, 3, 17]:
+    #     tree.insert(item)
+    for item in items:
+        tree.insert(item)
+    
+
     print(tree.value_order_traversal())
     tree.probe()
-    tree.search(5)
+    print(tree.search(11))
 
 
 

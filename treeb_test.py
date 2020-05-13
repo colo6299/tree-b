@@ -19,6 +19,12 @@ class BTreeTest(unittest.TestCase):
             tree.insert(item)
         return tree, test_list
 
+    def test_node_binary_search_odd(self):
+        node = NodeB(5, [None, 5, None, 7, None, 11, None, 12, None])
+        assert node._find_array_index(5, 0, (len(node.array)-1)//2) == (1, True)
+        assert node._find_array_index(6, 0, (len(node.array)-1)//2) == (2, False)
+        assert node._find_array_index(4, 0, (len(node.array)-1)//2) == (0, False)
+
     def test_insert_multi_b_odds(self):
         for b in range(3, 20, 2):
             print('Testing insert with b=' + str(b) + '... ', end='')
